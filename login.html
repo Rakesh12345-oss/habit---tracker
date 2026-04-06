@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+  <h1>Login to Habit Tracker</h1>
+  <form action="{{ url_for('login') }}" method="post" class="auth-form">
+    <label>
+      Username
+      <input type="text" name="username" placeholder="Enter your username" required>
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" placeholder="Enter your password" required>
+    </label>
+    <button class="button" type="submit">Login</button>
+  </form>
+  <p class="form-note">Need an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+</section>
+{% endblock %}

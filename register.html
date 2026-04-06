@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+  <h1>Create a new account</h1>
+  <form action="{{ url_for('register') }}" method="post" class="auth-form">
+    <label>
+      Username
+      <input type="text" name="username" placeholder="Pick a username" required>
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" placeholder="Choose a password" required>
+    </label>
+    <button class="button" type="submit">Register</button>
+  </form>
+  <p class="form-note">Already registered? <a href="{{ url_for('login') }}">Log in here</a>.</p>
+</section>
+{% endblock %}

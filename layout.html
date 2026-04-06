@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Habit Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <a href="{{ url_for('home') }}">Habit Tracker</a>
+      </div>
+      {% if user %}
+      <div class="nav-actions">
+        <span class="user-label">Signed in as <strong>{{ user["username"] }}</strong></span>
+        <a class="button ghost" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+      {% endif %}
+    </header>
+
+    {% if get_flashed_messages() %}
+      <section class="alerts">
+        {% for message in get_flashed_messages() %}
+          <div class="alert">{{ message }}</div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    <main class="main-panel">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <p>Flask habit tracker with auth, edit/delete, and polished UI.</p>
+    </footer>
+  </div>
+</body>
+</html>
