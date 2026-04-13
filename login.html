@@ -1,21 +1,66 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
 
-{% block title %}Login{% endblock %}
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-{% block content %}
-<section class="panel auth-panel">
-  <h1>Login to Habit Tracker</h1>
-  <form action="{{ url_for('login') }}" method="post" class="auth-form">
-    <label>
-      Username
-      <input type="text" name="username" placeholder="Enter your username" required>
-    </label>
-    <label>
-      Password
-      <input type="password" name="password" placeholder="Enter your password" required>
-    </label>
-    <button class="button" type="submit">Login</button>
-  </form>
-  <p class="form-note">Need an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
-</section>
-{% endblock %}
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Login 💖</h2>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p style="color:red;">{{ messages[0] }}</p>
+  {% endif %}
+{% endwith %}
+
+    <!-- ONLY ONE FORM -->
+    
+
+    <form method="POST">
+    <input name="username">
+    <input name="password" type="password">
+    <button type="submit">Login</button>
+    <a href="/register">Register</a>
+    
+    
+</form>
+</div>
+
+</body>
+</html>

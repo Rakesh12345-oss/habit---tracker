@@ -1,152 +1,149 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-{% block title %}My Habits{% endblock %}
+<div class="container">
+    <div class="login-box">
 
-{% block content %}
-<div class="habits-container">
-  <aside class="habits-sidebar">
-    <div class="sidebar-panel examples-panel">
-      <h2>📚 Example Habits</h2>
-      <div class="examples-list">
-        <div class="example-card good">
-          <h3>✅ Good Habits to Build</h3>
-          <ul>
-            <li>Exercise for 30 minutes</li>
-            <li>Drink 8 glasses of water</li>
-            <li>Read for 20 minutes</li>
-            <li>Meditate</li>
-            <li>Eat vegetables</li>
-            <li>Sleep 8 hours</li>
-            <li>Study/Learn something new</li>
-            <li>Journal thoughts</li>
-            <li>Walk 10,000 steps</li>
-            <li>Practice gratitude</li>
-          </ul>
-        </div>
-        <div class="example-card bad">
-          <h3>🚫 Bad Habits to Avoid</h3>
-          <ul>
-            <li>Skip breakfast</li>
-            <li>Spend too much on social media</li>
-            <li>Smoke or vape</li>
-            <li>Stay up late scrolling</li>
-            <li>Eat junk food</li>
-            <li>Skip exercise</li>
-            <li>Procrastinate on tasks</li>
-            <li>Bite nails</li>
-            <li>Skip meals</li>
-            <li>Check phone before bed</li>
-          </ul>
-        </div>
-      </div>
+        <h2>My Habits ✅</h2>
+
+        <!-- Add Habit Form -->
+        <form method="POST">
+            <div class="input-box">
+                <input type="text" name="habit" required>
+                <label>Add new habit</label>
+            </div>
+            <button type="submit">Add Habit</button>
+        </form>
+
+        <!-- Habit List -->
+        <ul style="margin-top:20px; text-align:left;">
+            {% for habit in habits %}
+                <li style="margin:10px 0;">
+                    {{ habit }}
+                    <a href="/delete/{{ loop.index0 }}" style="color:red; float:right;">❌</a>
+                </li>
+            {% else %}
+                <li>No habits yet</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Logout -->
+        <a href="/logout" style="display:block; margin-top:20px; color:#667eea;">
+            Logout
+        </a>
+
     </div>
-  </aside>
-
-  <main class="habits-main">
-    <section class="panel welcome-panel">
-      <div>
-        <h1>Welcome back, {{ user["username"] }}</h1>
-        <p>Track your habits every day. Add new habits, mark them as done, edit details, or delete items you no longer need.</p>
-      </div>
-    </section>
-
-    <section class="panel summary-panel">
-      <div class="summary-grid">
-        <div class="summary-card">
-          <span class="summary-label">Today completed</span>
-          <strong>{{ today_count }}</strong>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Longest streak</span>
-          <strong>{{ longest_streak }} day{{ 's' if longest_streak != 1 else '' }}</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel form-panel">
-      <h2>Add a new habit</h2>
-      <form action="{{ url_for('add_habit') }}" method="post" class="habit-form">
-        <input type="text" name="name" placeholder="Enter a habit" required>
-        <select name="habit_type">
-          <option value="good">Good Habit (to do)</option>
-          <option value="bad">Bad Habit (to avoid)</option>
-        </select>
-        <select name="target_frequency">
-          <option value="Daily">Daily</option>
-          <option value="Weekly">Weekly</option>
-          <option value="Monthly">Monthly</option>
-        </select>
-        <input type="text" name="reminder" placeholder="Reminder time e.g. 8:00 AM">
-        <button class="button" type="submit">Add Habit</button>
-      </form>
-    </section>
-<section class="panel habit-panel">
-  <h2>📈 Good Habits</h2>
-  {% if good_habits %}
-  <ul class="habit-list good-list">
-    {% for habit in good_habits %}
-      <li class="habit-item good-habit {{ 'done' if habit['status'] == 'Done' else '' }}">
-        <div class="habit-meta">
-          <span class="habit-name">{{ habit['name'] }}</span>
-          <span class="habit-status">{{ habit['status'] }}</span>
-          <span class="habit-detail">Frequency: {{ habit['target_frequency'] or 'Daily' }}</span>
-          {% if habit['reminder'] %}
-            <span class="habit-detail">Reminder: {{ habit['reminder'] }}</span>
-          {% endif %}
-          <span class="habit-streak">Streak: {{ habit['streak'] or 0 }} day{{ 's' if habit['streak'] != 1 else '' }}</span>
-        </div>
-        <div class="habit-actions">
-          {% if habit['status'] != 'Done' %}
-          <form action="{{ url_for('mark_done', habit_id=habit['id']) }}" method="post" class="mark-done-form">
-            <button class="button secondary" type="submit" onclick="playSuccessSound(event)">Mark Done</button>
-          </form>
-          {% endif %}
-          <a class="button ghost" href="{{ url_for('edit_habit', habit_id=habit['id']) }}">Edit</a>
-          <form action="{{ url_for('delete_habit', habit_id=habit['id']) }}" method="post" class="inline-form">
-            <button class="button danger" type="submit">Delete</button>
-          </form>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p class="empty-state">No good habits yet. Add one above!</p>
-  {% endif %}
-</section>
-
-<section class="panel habit-panel">
-  <h2>📉 Bad Habits</h2>
-  {% if bad_habits %}
-  <ul class="habit-list bad-list">
-    {% for habit in bad_habits %}
-      <li class="habit-item bad-habit {{ 'done' if habit['status'] == 'Done' else '' }}">
-        <div class="habit-meta">
-          <span class="habit-name">{{ habit['name'] }}</span>
-          <span class="habit-status">{{ habit['status'] }}</span>
-          <span class="habit-detail">Frequency: {{ habit['target_frequency'] or 'Daily' }}</span>
-          {% if habit['reminder'] %}
-            <span class="habit-detail">Reminder: {{ habit['reminder'] }}</span>
-          {% endif %}
-          <span class="habit-streak">Streak: {{ habit['streak'] or 0 }} day{{ 's' if habit['streak'] != 1 else '' }}</span>
-        </div>
-        <div class="habit-actions">
-          {% if habit['status'] != 'Done' %}
-          <form action="{{ url_for('mark_done', habit_id=habit['id']) }}" method="post" class="mark-done-form">
-            <button class="button secondary" type="submit" onclick="playSuccessSound(event)">Mark Done</button>
-          </form>
-          {% endif %}
-          <a class="button ghost" href="{{ url_for('edit_habit', habit_id=habit['id']) }}">Edit</a>
-          <form action="{{ url_for('delete_habit', habit_id=habit['id']) }}" method="post" class="inline-form">
-            <button class="button danger" type="submit">Delete</button>
-          </form>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p class="empty-state">No bad habits. Great job!</p>
-  {% endif %}
-  </section>
-</main>
+<div class="dashboard">
+    <h3> streak: 5 days </h3>
+    <p> completed: 3 / 5 </p>
 </div>
-{% endblock %}
+<div class="habit-card">
+    <h4>Drink Water</h4>
+    <p>Streak: 3 days</p>
+    <p>Completed: 2 / 3</p>
+</div>
+<div class="habit-card">
+    <h4>Exercise</h4>
+    <p>Streak: 2 days</p>
+    <p>Completed: 1 / 2</p>
+</div>
+<div class="progress">
+    <div class="progress-bar" style="width: 60%;"></div>
+</div>
+
+</body>
+</html>
+<script>
+let streak = localStorage.getItem("streak") || 0;
+let lastDate = localStorage.getItem("lastDate");
+
+document.getElementById("streak").innerText = streak;
+
+function markDone() {
+    let today = new Date().toDateString();
+
+    if (lastDate === today) {
+        alert("Already marked today!");
+        return;
+    }
+
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (lastDate === yesterday.toDateString()) {
+        streak++;
+    } else {
+        streak = 1;
+    }
+
+    localStorage.setItem("streak", streak);
+    localStorage.setItem("lastDate", today);
+
+    document.getElementById("streak").innerText = streak;
+}
+</script>
+<div style="background:#ddd; width:100%; border-radius:10px;">
+  <div style="width:60%; background:green; color:white; padding:5px;">
+    60% Done
+  </div>
+</div>
+<button onclick="toggleMode()">🌙 Mode</button>
+<script>
+function suggestHabit() {
+  const habits = [
+    "Drink Water 💧",
+    "Exercise 🏃",
+    "Read 10 pages 📖",
+    "Meditate 🧘",
+    "No phone for 1 hour 📵"
+  ];
+
+  const random = habits[Math.floor(Math.random() * habits.length)];
+  document.getElementById("suggestion").innerText = random;
+
+}
+<button onclick="suggestHabit()">💡 Suggest Habit</button>
+<p id="suggestion"></p>
+</script>
+<div class="container">
+  <button onclick="suggestHabit()">💡 Suggest Habit</button>
+  <p id="suggestion"></p>
+</div>
+
+<script>
+  // your function here
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test</title>
+</head>
+<body>
+
+<button onclick="suggestHabit()">💡 Suggest Habit</button>
+<p id="suggestion"></p>
+
+<script>
+function suggestHabit() {
+  const habits = [
+    "Drink Water 💧",
+    "Exercise 🏃",
+    "Read 10 pages 📖",
+    "Meditate 🧘",
+    "No phone for 1 hour 📵"
+  ];
+
+  const random = habits[Math.floor(Math.random() * habits.length)];
+  document.getElementById("suggestion").innerText = random;
+}
+</script>
+
+</body>
+</html>

@@ -1,21 +1,69 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-{% block title %}Register{% endblock %}
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+        }
 
-{% block content %}
-<section class="panel auth-panel">
-  <h1>Create a new account</h1>
-  <form action="{{ url_for('register') }}" method="post" class="auth-form">
-    <label>
-      Username
-      <input type="text" name="username" placeholder="Pick a username" required>
-    </label>
-    <label>
-      Password
-      <input type="password" name="password" placeholder="Choose a password" required>
-    </label>
-    <button class="button" type="submit">Register</button>
-  </form>
-  <p class="form-note">Already registered? <a href="{{ url_for('login') }}">Log in here</a>.</p>
-</section>
-{% endblock %}
+        h1{
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #2a5298;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2a5298;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 16px;
+        }
+
+        a:hover{
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>Register</h1>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have account? <a href="/login">Login</a></p>
+</div>
+</body>
+</html>

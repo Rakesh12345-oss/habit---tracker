@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <!-- 🔤 Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* 🌙 THEMES */
+        body.dark {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+        }
+
+        body.light {
+            background: #f5f5f5;
+            color: black;
+        }
+
+        /* 📌 SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar h3 {
+            margin-top: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .sidebar li:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(5px);
+        }
+
+        /* 🔷 HEADER */
+        .header {
+            margin-left: 220px;
+            position: relative;
+            padding: 15px 0;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* 🔴 LOGOUT */
+        .logout {
+            position: absolute;
+            top: 15px;
+            right: 80px;
+            background: red;
+            padding: 6px 12px;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        /* 🌙 THEME */
+        .theme-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+        }
+
+        /* 🖼️ LOGO */
+        .logo {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .logo img {
+            height: 45px;
+        }
+
+        /* 📦 CONTENT */
+        .container {
+            margin-left: 260px;
+            width: 400px;
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            background: linear-gradient(90deg, #00c6ff, #7f00ff);
+            color: white;
+            border-radius: 5px;
+        }
+
+        .habit {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bad-habit {
+            border-left: 5px solid red;
+            background: rgba(255,0,0,0.15);
+        }
+
+        .done { background: green; color: white; padding:5px; }
+        .delete { background: red; color: white; padding:5px; }
+
+        .done-text {
+            color: lightgreen;
+        }
+    </style>
+</head>
+
+<body class="dark">
+
+<!-- 📌 SIDEBAR -->
+<div class="sidebar">
+    <h3>✅ Good Habits</h3>
+    <ul>
+        <li onclick="fillHabit('Wake up early')">Wake up early</li>
+        <li onclick="fillHabit('Exercise daily')">Exercise daily</li>
+        <li onclick="fillHabit('Drink water')">Drink water</li>
+        <li onclick="fillHabit('Read books')">Read books</li>
+    </ul>
+
+    <h3>❌ Bad Habits</h3>
+    <ul>
+        <li onclick="fillHabit('Procrastination')">Procrastination</li>
+        <li onclick="fillHabit('Overthinking')">Overthinking</li>
+        <li onclick="fillHabit('Too much mobile use')">Too much mobile use</li>
+    </ul>
+</div>
+
+<!-- 🔷 HEADER -->
+<div class="header">
+    <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+    <h1>Daily Habit Tracker</h1>
+
+    <a href="/logout" class="logout">Logout</a>
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}">
+    </div>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+
+    <form action="/add_habit" method="POST" onsubmit="return validateHabit()">
+        <input type="text" id="habitInput" name="habit_name" placeholder="New Habit" required>
+        <button type="submit" class="add-btn">Add Habit</button>
+    </form>
+
+    <hr>
+
+    <h3>Your Habits:</h3>
+
+    {% for habit in habits %}
+        <div class="habit {{ 'bad-habit' if habit.is_bad }}">
+            <div>
+                <span style="color: {{ 'red' if habit.is_bad else 'white' }}">
+                    {{ habit.name }}
+                </span>
+
+                {% if habit.done %}
+                    <span class="done-text">✔ Done</span>
+                {% endif %}
+
+                <div>Streak: {{ habit.streak }}</div>
+
+                {% if habit.is_bad %}
+                    <div style="color:red;">
+                        ⚠️ Count: {{ habit.bad_count }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {% if not habit.done %}
+                    <a href="/complete/{{ habit.id }}" class="done">Done</a>
+                {% endif %}
+                <a href="/delete/{{ habit.id }}" class="delete">Delete</a>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+
+<script>
+const badHabits = ["procrastination","overthinking","too much mobile use"];
+
+function validateHabit() {
+    let val = document.getElementById("habitInput").value.toLowerCase();
+    if (badHabits.includes(val)) {
+        return confirm("⚠️ This is a bad habit. Add anyway?");
+    }
+    return true;
+}
+
+function fillHabit(name) {
+    document.getElementById("habitInput").value = name;
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
+}
+</script>
+
+</body>
+</html>
